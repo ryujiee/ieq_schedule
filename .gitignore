@@ -1,0 +1,35 @@
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Node / Quasar
+frontend/node_modules/
+frontend/dist/
+frontend/.quasar/
+frontend/.vscode/
+frontend/.eslintcache
+
+# Go
+backend/bin/
+backend/tmp/
+backend/.env
+backend/.env.*
+backend/*.db
+
+# Whatsmeow/session (ajuste se você salvou sessão em arquivo)
+backend/*session*
+backend/*store*
+
+# Build artifacts
+*.exe
+*.out
