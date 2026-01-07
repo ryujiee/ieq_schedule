@@ -8,7 +8,8 @@ export default defineConfig((/* ctx */) => {
 
     boot: [
       'api',
-      'pinia'
+      'pinia',
+      'lang'
     ],
 
     css: ['app.scss'],
@@ -45,6 +46,7 @@ export default defineConfig((/* ctx */) => {
     },
 
     framework: {
+      lang: 'pt-BR',
       config: {
         brand: {
           primary: '#610659',

@@ -14,24 +14,10 @@
         <div class="row items-center justify-end q-gutter-sm">
           <q-btn flat icon="today" label="Hoje" no-caps @click="goToday" />
 
-          <q-btn
-            outline
-            color="primary"
-            icon="person_search"
-            label="Minhas escalas"
-            no-caps
-            @click="openMyDialog"
-          />
+          <q-btn outline color="primary" icon="person_search" label="Minhas escalas" no-caps @click="openMyDialog" />
 
-          <q-btn
-            outline
-            color="primary"
-            icon="refresh"
-            label="Atualizar"
-            no-caps
-            :loading="loadingMonth || loadingNext"
-            @click="refreshAll"
-          />
+          <q-btn outline color="primary" icon="refresh" label="Atualizar" no-caps :loading="loadingMonth || loadingNext"
+            @click="refreshAll" />
         </div>
       </div>
     </div>
@@ -57,15 +43,8 @@
           <q-separator />
 
           <q-card-section>
-            <q-date
-              v-model="selectedDate"
-              minimal
-              color="primary"
-              :events="eventDates"
-              event-color="primary"
-              @update:model-value="onSelectDate"
-              @navigation="onNavigateMonth"
-            />
+            <q-date v-model="selectedDate" minimal color="primary" :events="eventDates" event-color="primary"
+              @update:model-value="onSelectDate" @navigation="onNavigateMonth" />
 
             <div class="text-caption text-grey-7 q-mt-sm">
               Clique em um dia para ver a escala.
@@ -163,12 +142,7 @@
 
           <q-card-section v-else>
             <div v-if="nextItems.length" class="q-gutter-sm">
-              <q-card
-                v-for="item in nextItems"
-                :key="item.ID || item.id"
-                bordered
-                class="next-card"
-              >
+              <q-card v-for="item in nextItems" :key="item.ID || item.id" bordered class="next-card">
                 <q-card-section class="q-pa-md">
                   <div class="row items-center">
                     <q-badge color="primary" class="q-mr-sm">
@@ -217,39 +191,17 @@
         <q-separator />
 
         <q-card-section class="q-gutter-md">
-          <q-select
-            v-model="filterMemberId"
-            :options="memberOptions"
-            label="Meu nome (Membro)"
-            outlined
-            dense
-            clearable
-            use-input
-            input-debounce="0"
-            emit-value
-            map-options
-            :disable="!!filterFunctionId"
-            @filter="filterMemberOptions"
-          >
+          <q-select v-model="filterMemberId" :options="memberOptions" label="Meu nome (Membro)" outlined dense clearable
+            use-input input-debounce="0" emit-value map-options :disable="!!filterFunctionId"
+            @filter="filterMemberOptions">
             <template #prepend>
               <q-icon name="person" />
             </template>
           </q-select>
 
-          <q-select
-            v-model="filterFunctionId"
-            :options="functionOptions"
-            label="Função"
-            outlined
-            dense
-            clearable
-            use-input
-            input-debounce="0"
-            emit-value
-            map-options
-            :disable="!!filterMemberId"
-            @filter="filterFunctionOptions"
-          >
+          <q-select v-model="filterFunctionId" :options="functionOptions" label="Função" outlined dense clearable
+            use-input input-debounce="0" emit-value map-options :disable="!!filterMemberId"
+            @filter="filterFunctionOptions">
             <template #prepend>
               <q-icon name="badge" />
             </template>
@@ -373,7 +325,7 @@ export default {
         .map(ymd => ymd.replaceAll('-', '/'))   // q-date
     },
 
-    myHint () {
+    myHint() {
       if (this.filterMemberId && this.filterFunctionId) {
         return 'Escolha apenas UM filtro: membro OU função.'
       }
@@ -392,9 +344,23 @@ export default {
     // ---------- Normalização de datas (evita bug timezone) ----------
     toYMD(value) {
       if (!value) return ''
-      if (typeof value === 'string' && value.includes('/')) return value.replaceAll('/', '-').slice(0, 10)
-      if (typeof value === 'string') return value.slice(0, 10)
-      try { return date.formatDate(value, 'YYYY-MM-DD') } catch { return '' }
+
+      // q-date usa YYYY/MM/DD
+      if (typeof value === 'string' && value.includes('/')) {
+        return value.replaceAll('/', '-').slice(0, 10)
+      }
+
+      // ISO string
+      if (typeof value === 'string') {
+        return value.slice(0, 10)
+      }
+
+      // Date object
+      try {
+        return date.formatDate(value, 'YYYY-MM-DD')
+      } catch {
+        return ''
+      }
     },
 
     // ---------- Nomes ----------
@@ -472,14 +438,15 @@ export default {
     },
 
     formatDate(value) {
-      if (!value) return '--/--'
-      return date.formatDate(value, 'DD/MM')
+      const ymd = this.toYMD(value)
+      const dt = this.ymdToLocalDate(ymd)
+      return dt ? date.formatDate(dt, 'DD/MM') : '--/--'
     },
 
     dateLabel(item) {
       const ymd = this.toYMD(item.date || item.Date)
-      if (!ymd) return '--'
-      return date.formatDate(ymd, 'DD [de] MMMM')
+      const dt = this.ymdToLocalDate(ymd)
+      return dt ? date.formatDate(dt, 'DD [de] MMMM') : '--'
     },
 
     // ---------- Dialog: minhas escalas ----------
@@ -494,6 +461,14 @@ export default {
       this.filterFunctionId = null
       this.applyMyFilter()
     },
+
+    ymdToLocalDate(ymd) {
+      if (!ymd) return null
+      const [y, m, d] = String(ymd).slice(0, 10).split('-').map(Number)
+      if (!y || !m || !d) return null
+      return new Date(y, m - 1, d) // LOCAL (sem UTC)
+    },
+
 
     buildFilterOptions() {
       const fnMap = new Map()
