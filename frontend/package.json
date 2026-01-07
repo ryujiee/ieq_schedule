@@ -1,8 +1,8 @@
 {
   "name": "frontend",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Quasar App",
+  "description": "IEQ Maria Goretti Escalas",
+  "productName": "IEQ Escalas",
   "author": "Ryujiee <ryujiee@outlook.com>",
   "type": "module",
   "private": true,
